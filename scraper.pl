@@ -1,30 +1,26 @@
-use LWP::Simple;
-use HTML::TreeBuilder;
-use Database::DumpTruck;
-
 use strict;
 use warnings;
+use LWP::UserAgent;
+use Database::DumpTruck;
 
-# Turn off output buffering
-$| = 1;
+# URL der Webseite und Suchbegriff
+my $url = 'https://www.win2day.at/gewinner-des-tages';
+my $search_term = 'hanskues';
 
-my $stringToFind = "XXXXXXXX";
+# HTTP-Anfrage an die Webseite senden
+my $ua = LWP::UserAgent->new;
+my $response = $ua->get($url);
 
-# Read out and parse a web page
-my $tb = HTML::TreeBuilder->new_from_content(get('https://www.win2day.at/gewinner-des-tages/'));
+if ($response->is_success) {
+	my $content = $response->decoded_content;
 
-# Look for <tr>s of <table id="hello">
-my @rows = $tb->look_down(
-    _tag => 'tr',
-    sub { shift->parent->attr('id') eq 'hello' }
-); 
-
-# Check if our string was found
-foreach my $row (@rows) {
-    if($row->as_text =~ m/\Q$stringToFind\E/) {
-        # print "String gefunden: $stringToFind\n";
-        last;
-    }
+	# Suchbegriff in der Webseite finden
+	if ($content =~ /$search_term/) {
+		 print "String gefunden: $search_term\n";
+	} 
+	else {
+		die "Fehler beim Abrufen der Webseite: " . $response->status_line;
+	}
 }
 
 # Open a database handle
@@ -32,6 +28,5 @@ my $dt = Database::DumpTruck->new({dbname => 'data.sqlite', table => 'data'});
 
 # Insert some records into the database
 $dt->insert([{
-    Name => 'Susan',
-    Occupation => 'Software Developer'
+    Name => 'Jagger78',
 }]);
