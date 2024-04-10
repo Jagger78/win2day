@@ -5,7 +5,8 @@ use Database::DumpTruck;
 
 # URL der Webseite und Suchbegriff
 my $url = 'https://www.win2day.at/gewinner-des-tages';
-my $search_term = 'hanskues';
+# Use my secret value
+my $search_term = $ENV{'MORPH_STRING'};
 
 # HTTP-Anfrage an die Webseite senden
 my $ua = LWP::UserAgent->new;
